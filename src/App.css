@@ -10,9 +10,10 @@
 }
 
 .app-header h1 {
-  color: #333;
+  color: #ffffff;
   font-size: 2rem;
   margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .app-main {

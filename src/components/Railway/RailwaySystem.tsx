@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { TrackComponent } from './TrackComponent';
-import { SwitchComponent } from './SwitchComponent';
-import { SignalComponent } from './SignalComponent';
-import { TrainComponent } from './TrainComponent';
+import React, { useEffect, useState } from 'react';
+import type { RailwayConfig, Signal, Switch, Track, Train } from '../../types/railway';
 import { getTrackColor } from '../../utils/trackUtils';
-import type { Track, Switch, Signal, Train, RailwayConfig } from '../../types/railway';
+import { SignalComponent } from './SignalComponent';
+import { SwitchComponent } from './SwitchComponent';
+import { TrackComponent } from './TrackComponent';
+import { TrainComponent } from './TrainComponent';
 
 interface RailwaySystemProps {
   config?: Partial<RailwayConfig>;
@@ -68,7 +68,7 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
     }
   ]);
 
-  // Estado del tren y simulación
+  // Estado del tren 1 y simulación
   const [train, setTrain] = useState<Train>({
     id: 'T1',
     position: { x: 50, y: 200 },
@@ -87,6 +87,25 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
     speed: 1.0 // multiplicador de velocidad
   });
 
+  // Estado del tren 2 (nuevo)
+  const [train2, setTrain2] = useState<Train>({
+    id: 'T2',
+    position: { x: 60, y: 280 },
+    currentTrackId: 'track-0-horizontal',
+    progress: 0,
+    speed: 0.00125,
+    direction: 'forward',
+    isMoving: false,
+    color: '#2E8B57', // Verde mar
+    size: 24,
+    isWaitingAtSignal: false
+  });
+
+  const [simulation2, setSimulation2] = useState({
+    isRunning: false,
+    speed: 1.0
+  });
+
   // Referencia para el interval de animación
   // const [animationFrame, setAnimationFrame] = useState<number | null>(null);
 
@@ -96,6 +115,24 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
     {
       id: 'track-1',
       start: { x: 50, y: 200 },
+      end: { x: 300, y: 200 },
+      type: 'straight',
+      color: '#FFD700' // Dorado por defecto
+    },
+    
+    // NUEVA VÍA: Entrada desde abajo - Parte horizontal
+    {
+      id: 'track-0-horizontal',
+      start: { x: 60, y: 280 },
+      end: { x: 266, y: 280 },
+      type: 'straight',
+      color: '#FFD700' // Dorado por defecto
+    },
+    
+    // NUEVA VÍA: Entrada desde abajo - Parte diagonal hacia SW1 (corta pero conectada)
+    {
+      id: 'track-0-diagonal',
+      start: { x: 266, y: 280 },
       end: { x: 300, y: 200 },
       type: 'straight',
       color: '#FFD700' // Dorado por defecto
@@ -218,11 +255,43 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
     setSimulation(prev => ({ ...prev, speed: newSpeed }));
   };
 
+  // Funciones de control para el segundo tren
+  const startSimulation2 = () => {
+    setSimulation2(prev => ({ ...prev, isRunning: true }));
+    setTrain2(prev => ({ ...prev, isMoving: true }));
+  };
+
+  const stopSimulation2 = () => {
+    setSimulation2(prev => ({ ...prev, isRunning: false }));
+    setTrain2(prev => ({ ...prev, isMoving: false }));
+  };
+
+  const resetSimulation2 = () => {
+    setSimulation2({ isRunning: false, speed: 1.0 });
+    setTrain2({
+      id: 'T2',
+      position: { x: 60, y: 280 },
+      currentTrackId: 'track-0-horizontal',
+      progress: 0,
+      speed: 0.00125,
+      direction: 'forward',
+      isMoving: false,
+      color: '#2E8B57',
+      size: 24,
+      isWaitingAtSignal: false
+    });
+  };
+
+  const updateSpeed2 = (newSpeed: number) => {
+    setSimulation2(prev => ({ ...prev, speed: newSpeed }));
+  };
+
   // Loop de animación SUPER SIMPLE
   useEffect(() => {
     let animationId: number;
     
     const animate = () => {
+      // El loop siempre continúa si la simulación está corriendo O si hay un tren esperando
       if (simulation.isRunning) {
         setTrain(prevTrain => {
           // Verificar si hay un semáforo rojo que bloquee el movimiento
@@ -253,7 +322,8 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
               
               if (signalAtPosition && signalAtPosition.state === 'green') {
                 console.log(`[TREN] Semáforo ${signalAtPosition.id} cambió a verde - reanudando movimiento`);
-                // Continuar con el movimiento normal
+                // Limpiar bandera y continuar con movimiento normal
+                // No return aquí, seguir con la lógica de movimiento
               } else if (signalAtPosition && signalAtPosition.state === 'red') {
                 // Seguir esperando
                 return prevTrain;
@@ -350,7 +420,138 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulation.isRunning]);
+  }, [simulation.isRunning, signals]);
+
+  // Loop de animación para el segundo tren
+  useEffect(() => {
+    let animationId2: number;
+    
+    const animate2 = () => {
+      if (simulation2.isRunning) {
+        setTrain2(prevTrain => {
+          // Verificar si hay un semáforo rojo que bloquee el movimiento
+          const currentTrack = tracks.find(t => t.id === prevTrain.currentTrackId);
+          if (currentTrack) {
+            const signalAhead = signals.find(s => 
+              s.trackId === prevTrain.currentTrackId && 
+              s.state === 'red'
+            );
+            
+            // Si hay un semáforo rojo y el tren está cerca, no mover
+            if (signalAhead) {
+              const trainX = prevTrain.position.x;
+              const signalX = signalAhead.position.x;
+              
+              // Si el tren está a menos de 30 píxeles del semáforo rojo, parar
+              if (Math.abs(trainX - signalX) < 30 && trainX < signalX) {
+                console.log(`[TREN2] Detenido por semáforo rojo ${signalAhead.id}`);
+                return { ...prevTrain, isWaitingAtSignal: true };
+              }
+            }
+            
+            // Si el tren estaba esperando en un semáforo, verificar si puede continuar
+            if (prevTrain.isWaitingAtSignal) {
+              const signalAtPosition = signals.find(s => 
+                s.trackId === prevTrain.currentTrackId
+              );
+              
+              if (signalAtPosition && signalAtPosition.state === 'green') {
+                console.log(`[TREN2] Semáforo ${signalAtPosition.id} cambió a verde - reanudando movimiento`);
+              } else if (signalAtPosition && signalAtPosition.state === 'red') {
+                return prevTrain;
+              }
+            }
+          }
+          
+          // Movimiento normal
+          const newProgress = prevTrain.progress + 0.01 * simulation2.speed;
+          
+          if (newProgress >= 1.0) {
+            // Lógica de navegación para el segundo tren
+            let nextTrackId: string;
+            
+            if (prevTrain.currentTrackId === 'track-0-horizontal') {
+              nextTrackId = 'track-0-diagonal';
+            } else if (prevTrain.currentTrackId === 'track-0-diagonal') {
+              // Llega al switch SW1, usar su estado
+              const sw1 = switches.find(s => s.id === 'SW1');
+              nextTrackId = sw1?.state === 'main' ? 'track-2-main' : 'track-2-branch-1';
+            } else if (prevTrain.currentTrackId === 'track-2-main') {
+              // Llega al switch SW2
+              const sw2 = switches.find(s => s.id === 'SW2');
+              nextTrackId = sw2?.state === 'main' ? 'track-3-main' : 'track-3-branch-1';
+            } else if (prevTrain.currentTrackId === 'track-2-branch-1') {
+              nextTrackId = 'track-2-branch-2';
+            } else if (prevTrain.currentTrackId === 'track-2-branch-2') {
+              nextTrackId = 'track-2-branch-3';
+            } else if (prevTrain.currentTrackId === 'track-2-branch-3') {
+              const sw2 = switches.find(s => s.id === 'SW2');
+              nextTrackId = sw2?.state === 'main' ? 'track-3-main' : 'track-3-branch-1';
+            } else if (prevTrain.currentTrackId === 'track-3-branch-1') {
+              nextTrackId = 'track-3-branch-2';
+            } else {
+              console.log(`[TREN2] Fin del recorrido en ${prevTrain.currentTrackId}`);
+              return {
+                ...prevTrain,
+                isMoving: false,
+                progress: 1.0,
+                isWaitingAtSignal: false
+              };
+            }
+            
+            const nextTrack = tracks.find(t => t.id === nextTrackId);
+            if (nextTrack) {
+              console.log(`[TREN2] Cambiando de ${prevTrain.currentTrackId} a ${nextTrackId}`);
+              return {
+                ...prevTrain,
+                currentTrackId: nextTrack.id,
+                progress: 0,
+                position: nextTrack.start,
+                isWaitingAtSignal: false
+              };
+            } else {
+              return {
+                ...prevTrain,
+                isMoving: false,
+                progress: 1.0,
+                isWaitingAtSignal: false
+              };
+            }
+          } else {
+            // Calcular nueva posición en la vía actual
+            const currentTrack = tracks.find(t => t.id === prevTrain.currentTrackId);
+            if (currentTrack) {
+              const newPosition = {
+                x: currentTrack.start.x + (currentTrack.end.x - currentTrack.start.x) * newProgress,
+                y: currentTrack.start.y + (currentTrack.end.y - currentTrack.start.y) * newProgress
+              };
+              return {
+                ...prevTrain,
+                progress: newProgress,
+                position: newPosition,
+                isWaitingAtSignal: false
+              };
+            }
+          }
+          
+          return prevTrain;
+        });
+        
+        animationId2 = requestAnimationFrame(animate2);
+      }
+    };
+
+    if (simulation2.isRunning) {
+      animationId2 = requestAnimationFrame(animate2);
+    }
+
+    return () => {
+      if (animationId2) {
+        cancelAnimationFrame(animationId2);
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simulation2.isRunning, signals]);
 
   return (
     <div className="railway-system">
@@ -391,8 +592,9 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
           />
         ))}
         
-        {/* Renderizar el tren */}
+        {/* Renderizar los trenes */}
         <TrainComponent train={train} />
+        <TrainComponent train={train2} />
       </svg>
       
       {/* Panel de control de simulación */}
@@ -440,7 +642,7 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
             }}
             title="Resetea el tren al inicio y limpia el estado"
           >
-            🔄 Reset Completo
+            🔄 Reset
           </button>
           
           <div style={{ marginLeft: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -464,50 +666,74 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
           </div>
         </div>
       </div>
-      
-      {/* Panel de control */}
-      <div style={{ marginTop: '20px', display: 'flex', gap: '20px' }}>
-        <div>
-          <h3 style={{ color: '#333' }}>Switches de Control</h3>
-          {switches.map(sw => (
-            <div key={sw.id} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
-                {sw.id} - Estado: {sw.state === 'main' ? 'PRINCIPAL' : 'DESVÍO'}
-              </div>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <div style={{ 
-                    width: '15px', 
-                    height: '15px', 
-                    backgroundColor: sw.mainColor, 
-                    border: '1px solid #333',
-                    opacity: sw.state === 'main' ? 1 : 0.3
-                  }}></div>
-                  <span>Principal</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <div style={{ 
-                    width: '15px', 
-                    height: '15px', 
-                    backgroundColor: sw.branchColor, 
-                    border: '1px solid #333',
-                    opacity: sw.state === 'branch' ? 1 : 0.3
-                  }}></div>
-                  <span>Desvío</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div>
-          <h3 style={{ color: '#333' }}>Señales</h3>
-          {signals.map(signal => (
-            <div key={signal.id} style={{ margin: '5px 0' }}>
-              <span style={{ color: signal.state === 'green' ? '#4CAF50' : signal.state === 'yellow' ? '#FFC107' : '#F44336' }}>
-                {signal.id}: {signal.state.toUpperCase()}
-              </span>
-            </div>
-          ))}
+
+      {/* Panel de control del segundo tren */}
+      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e8f5e8', borderRadius: '8px', border: '2px solid #2E8B57' }}>
+        <h3 style={{ margin: '0 0 15px 0', color: '#2E8B57' }}>Control de Tren 2 (Verde Mar)</h3>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '15px' }}>
+          <button
+            onClick={startSimulation2}
+            disabled={simulation2.isRunning}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: simulation2.isRunning ? '#ccc' : '#2E8B57',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: simulation2.isRunning ? 'not-allowed' : 'pointer'
+            }}
+          >
+            ▶ Iniciar
+          </button>
+          <button
+            onClick={stopSimulation2}
+            disabled={!simulation2.isRunning}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: !simulation2.isRunning ? '#ccc' : '#f44336',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: !simulation2.isRunning ? 'not-allowed' : 'pointer'
+            }}
+          >
+            ⏸ Parar
+          </button>
+          <button
+            onClick={resetSimulation2}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#FF9800',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+            title="Resetea el tren 2 al inicio y limpia el estado"
+          >
+            🔄 Reset
+          </button>
+          
+          <div style={{ marginLeft: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label style={{ color: '#2E8B57', fontWeight: 'bold' }}>Velocidad:</label>
+            <input
+              type="range"
+              min="0.1"
+              max="2"
+              step="0.1"
+              value={simulation2.speed}
+              onChange={(e) => updateSpeed2(parseFloat(e.target.value))}
+              style={{ width: '100px' }}
+            />
+            <span style={{ color: '#2E8B57', minWidth: '30px' }}>{simulation2.speed}x</span>
+          </div>
+          
+          <div style={{ marginLeft: '20px', color: '#2E8B57' }}>
+            Estado: <strong style={{ color: simulation2.isRunning ? '#4CAF50' : '#f44336' }}>
+              {simulation2.isRunning ? 'EJECUTANDO' : 'DETENIDO'}
+            </strong>
+          </div>
         </div>
       </div>
     </div>

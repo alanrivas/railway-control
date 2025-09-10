@@ -2,9 +2,41 @@
 
 Registro de todos los cambios importantes del Railway Control System.
 
+## [v0.3.0] - 2025-09-09
+
+### ✨ Nuevas Características Principales
+
+- **🚂 Sistema Dual de Trenes**: Implementado segundo tren completamente independiente
+- **🎨 Tren Verde Mar**: Segundo tren con color distintivo (#2E8B57) para fácil identificación
+- **🛤️ Nueva Ruta de Entrada**: Agregada vía horizontal + diagonal hacia SW1 para el segundo tren
+- **🎛️ Controles Independientes**: Panel de control separado para cada tren con sus propios botones
+- **⚡ Velocidades Independientes**: Cada tren tiene su propio control de velocidad (0.1x - 2.0x)
+
+### 🔧 Mejoras de Sistema
+
+- **📊 Paneles de Estado**: Cada tren muestra su estado (EJECUTANDO/DETENIDO) independientemente
+- **🎯 Navegación Inteligente**: Segundo tren navega: track-0-horizontal → track-0-diagonal → SW1 → sistema principal
+- **🚦 Respeto a Semáforos**: Ambos trenes respetan independientemente los semáforos rojos
+- **🔄 Reset Independiente**: Cada tren puede resetearse sin afectar al otro
+- **🎨 UI Mejorada**: Panel del segundo tren con colores distintivos (fondo verde claro, bordes verde mar)
+
+### 🛤️ Infraestructura de Vías
+
+- **Nueva Vía**: `track-0-horizontal` - entrada horizontal para el segundo tren
+- **Nueva Vía**: `track-0-diagonal` - conexión diagonal hacia SW1
+- **Integración**: Las nuevas vías se conectan perfectamente con el sistema existente
+
+### 💻 Arquitectura Técnica
+
+- **Estados Independientes**: `train2` y `simulation2` con gestión de estado separada
+- **Loops de Animación**: Dos useEffect independientes para animación simultánea
+- **Funciones de Control**: `startSimulation2`, `stopSimulation2`, `resetSimulation2`, `updateSpeed2`
+- **Renderizado Dual**: Ambos trenes se renderizan simultáneamente en el SVG
+
 ## [v0.2.0] - 2025-09-09
 
 ### ✨ Nuevas Características
+
 - **Sistema de Semáforos Mejorado**: Implementados semáforos rojo/verde únicamente
 - **Detección de Semáforos**: El tren se detiene automáticamente ante semáforos rojos
 - **Posicionamiento Corregido**: Eliminado semáforo S4 "volador", semáforos correctamente posicionados
@@ -12,24 +44,28 @@ Registro de todos los cambios importantes del Railway Control System.
 - **Navegación Inteligente**: El tren respeta el estado de ambos switches para decidir rutas
 
 ### 🔧 Mejoras
+
 - **Simplificación de Código**: Eliminada lógica compleja de useCallback/useMemo que causaba problemas
 - **Sistema de Animación**: Implementado loop de animación simple pero funcional
 - **Tipos TypeScript**: Agregada propiedad `isWaitingAtSignal` al tipo Train
 - **Código de Colores**: Mejorado sistema de colores para switches y vías
 
 ### 🐛 Correcciones
+
 - **Movimiento del Tren**: Reparado sistema de animación que se había roto
 - **Switch SW2**: Corregida lógica para que el segundo switch funcione correctamente
 - **Semáforos**: Eliminados estados amarillos, solo rojo/verde
 - **Reset del Tren**: Funcionalidad de reset ahora inicializa correctamente todas las propiedades
 
 ### 🛤️ Layout de Vías
+
 - **track-1**: Vía de entrada común
 - **track-2-main/branch**: Sistema de rutas controlado por SW1
 - **track-3-main/branch**: Sistema de rutas controlado por SW2
 - **Navegación**: El tren sigue las rutas según el estado de los switches
 
 ### 📋 Estado Actual
+
 - ✅ Movimiento fluido del tren
 - ✅ Switches interactivos (SW1 y SW2)
 - ✅ Semáforos rojo/verde funcionales
@@ -39,6 +75,7 @@ Registro de todos los cambios importantes del Railway Control System.
 ## [v0.1.0] - 2025-09-09
 
 ### 🎉 Lanzamiento Inicial
+
 - **Proyecto Base**: Creado con React + TypeScript + Vite
 - **Sistema de Vías**: Layout básico con múltiples rutas
 - **Componente Tren**: Visualización básica del tren
@@ -47,6 +84,7 @@ Registro de todos los cambios importantes del Railway Control System.
 - **Controles**: Start/Stop/Reset/Speed básicos
 
 ### 🏗️ Arquitectura
+
 - **Componentes Modulares**: Separación en TrackComponent, SwitchComponent, etc.
 - **Tipos TypeScript**: Definiciones completas para Train, Track, Switch, Signal
 - **Utilidades**: trackUtils.ts y trainUtils.ts para lógica de negocio
@@ -55,12 +93,14 @@ Registro de todos los cambios importantes del Railway Control System.
 ## [Próximas Versiones]
 
 ### 🎯 v0.3.0 (Planificado)
+
 - [ ] Reanudación automática completa en semáforos verdes
 - [ ] Múltiples trenes simultáneos
 - [ ] Detección de colisiones
 - [ ] Sonidos y efectos visuales
 
 ### 🎯 v0.4.0 (Planificado)
+
 - [ ] Guardado/carga de configuraciones
 - [ ] Editor de layout de vías
 - [ ] Sistema de horarios para trenes
