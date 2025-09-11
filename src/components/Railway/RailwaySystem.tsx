@@ -309,7 +309,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
               
               // Si el tren está a menos de 30 píxeles del semáforo rojo, parar
               if (Math.abs(trainX - signalX) < 30 && trainX < signalX) {
-                console.log(`[TREN] Detenido por semáforo rojo ${signalAhead.id}`);
                 return { ...prevTrain, isWaitingAtSignal: true }; // Marcar que está esperando
               }
             }
@@ -321,7 +320,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
               );
               
               if (signalAtPosition && signalAtPosition.state === 'green') {
-                console.log(`[TREN] Semáforo ${signalAtPosition.id} cambió a verde - reanudando movimiento`);
                 // Limpiar bandera y continuar con movimiento normal
                 // No return aquí, seguir con la lógica de movimiento
               } else if (signalAtPosition && signalAtPosition.state === 'red') {
@@ -359,7 +357,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
               nextTrackId = 'track-3-branch-2';
             } else {
               // Fin del recorrido
-              console.log(`[TREN] Fin del recorrido en ${prevTrain.currentTrackId}`);
               return {
                 ...prevTrain,
                 isMoving: false,
@@ -369,7 +366,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
             
             const nextTrack = tracks.find(t => t.id === nextTrackId);
             if (nextTrack) {
-              console.log(`[TREN] Cambiando de ${prevTrain.currentTrackId} a ${nextTrackId} (SW1: ${sw1?.state}, SW2: ${sw2?.state})`);
               return {
                 ...prevTrain,
                 currentTrackId: nextTrack.id,
@@ -378,7 +374,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
                 isWaitingAtSignal: false // Limpiar bandera al cambiar de vía
               };
             } else {
-              console.log(`[TREN] No se encontró track ${nextTrackId}`);
               return {
                 ...prevTrain,
                 isMoving: false,
@@ -444,7 +439,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
               
               // Si el tren está a menos de 30 píxeles del semáforo rojo, parar
               if (Math.abs(trainX - signalX) < 30 && trainX < signalX) {
-                console.log(`[TREN2] Detenido por semáforo rojo ${signalAhead.id}`);
                 return { ...prevTrain, isWaitingAtSignal: true };
               }
             }
@@ -456,7 +450,7 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
               );
               
               if (signalAtPosition && signalAtPosition.state === 'green') {
-                console.log(`[TREN2] Semáforo ${signalAtPosition.id} cambió a verde - reanudando movimiento`);
+                // Continuar con movimiento normal
               } else if (signalAtPosition && signalAtPosition.state === 'red') {
                 return prevTrain;
               }
@@ -490,7 +484,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
             } else if (prevTrain.currentTrackId === 'track-3-branch-1') {
               nextTrackId = 'track-3-branch-2';
             } else {
-              console.log(`[TREN2] Fin del recorrido en ${prevTrain.currentTrackId}`);
               return {
                 ...prevTrain,
                 isMoving: false,
@@ -501,7 +494,6 @@ export const RailwaySystem: React.FC<RailwaySystemProps> = ({
             
             const nextTrack = tracks.find(t => t.id === nextTrackId);
             if (nextTrack) {
-              console.log(`[TREN2] Cambiando de ${prevTrain.currentTrackId} a ${nextTrackId}`);
               return {
                 ...prevTrain,
                 currentTrackId: nextTrack.id,
