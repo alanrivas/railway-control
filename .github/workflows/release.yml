@@ -1,0 +1,235 @@
+name: 🚀 Release Pipeline
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  NODE_VERSION: "18"
+  REGISTRY: docker.io
+
+jobs:
+  validate-tag:
+    name: 🏷️ Validate Tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
+      is-prerelease: ${{ steps.extract.outputs.is-prerelease }}
+
+    steps:
+      - name: 📊 Extract version info
+        id: extract
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          if [[ $VERSION == *"-"* ]]; then
+            echo "is-prerelease=true" >> $GITHUB_OUTPUT
+            echo "This is a pre-release: $VERSION"
+          else
+            echo "is-prerelease=false" >> $GITHUB_OUTPUT
+            echo "This is a stable release: $VERSION"
+          fi
+
+  build-and-test:
+    name: 🏗️ Build & Test
+    runs-on: ubuntu-latest
+    needs: validate-tag
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔧 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests
+        run: npm run test:ci
+
+      - name: 🏗️ Build application
+        run: npm run build
+
+      - name: 📊 Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-files
+          path: dist/
+          retention-days: 7
+
+  docker-build-push:
+    name: 🐳 Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: [validate-tag, build-and-test]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔑 Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: 📋 Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/railway-control
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=beta,enable=${{ needs.validate-tag.outputs.is-prerelease == 'true' }}
+
+      - name: 🏗️ Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VERSION=${{ needs.validate-tag.outputs.version }}
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            VCS_REF=${{ github.sha }}
+
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+
+    steps:
+      - name: 🔍 Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.DOCKER_HUB_USERNAME }}/railway-control:${{ needs.validate-tag.outputs.version }}
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+
+  deploy-production:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [validate-tag, docker-build-push, security-scan]
+    if: needs.validate-tag.outputs.is-prerelease == 'false'
+    environment: production
+
+    steps:
+      - name: 🚀 Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/railway-control:${{ needs.validate-tag.outputs.version }}
+
+      - name: 🔄 Verify deployment
+        run: |
+          sleep 30
+          curl -f https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net || exit 1
+          echo "✅ Deployment verification successful"
+
+  deploy-staging:
+    name: 🎭 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [validate-tag, docker-build-push, security-scan]
+    if: needs.validate-tag.outputs.is-prerelease == 'true'
+    environment: staging
+
+    steps:
+      - name: 🚀 Deploy to Azure Web App (Staging)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          slot-name: staging
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE_STAGING }}
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/railway-control:${{ needs.validate-tag.outputs.version }}
+
+  create-release:
+    name: 📝 Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate-tag, deploy-production, deploy-staging]
+    if: always() && (needs.deploy-production.result == 'success' || needs.deploy-staging.result == 'success')
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📊 Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "changelog=Initial release" >> $GITHUB_OUTPUT
+          else
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📝 Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ needs.validate-tag.outputs.version }}
+          body: |
+            ## 🚀 Railway Control System v${{ needs.validate-tag.outputs.version }}
+
+            ### 📋 Changes
+            ${{ steps.changelog.outputs.changelog }}
+
+            ### 🐳 Docker Image
+            ```bash
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/railway-control:${{ needs.validate-tag.outputs.version }}
+            ```
+
+            ### 🌐 Live Demo
+            - **Production**: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net
+            - **Staging**: https://${{ secrets.AZURE_WEBAPP_NAME }}-staging.azurewebsites.net
+
+            ### 📊 Deployment Status
+            - ✅ Docker image built and pushed
+            - ✅ Security scan passed
+            - ✅ Deployed to ${{ needs.validate-tag.outputs.is-prerelease == 'true' && 'staging' || 'production' }}
+          draft: false
+          prerelease: ${{ needs.validate-tag.outputs.is-prerelease == 'true' }}
+
+  notify:
+    name: 📢 Notify Teams
+    runs-on: ubuntu-latest
+    needs: [validate-tag, create-release]
+    if: always()
+
+    steps:
+      - name: 📧 Send notification
+        run: |
+          echo "🎉 Railway Control System v${{ needs.validate-tag.outputs.version }} has been released!"
+          echo "📦 Docker image: ${{ secrets.DOCKER_HUB_USERNAME }}/railway-control:${{ needs.validate-tag.outputs.version }}"
+          echo "🌐 Live at: https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+
+          # Aquí puedes agregar notificaciones a Slack, Teams, etc.
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"🚀 New release: v${{ needs.validate-tag.outputs.version }}"}' \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}

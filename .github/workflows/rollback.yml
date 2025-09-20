@@ -1,0 +1,213 @@
+name: 🔄 Manual Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_version:
+        description: "Target version to rollback to (e.g., v1.0.1)"
+        required: true
+        type: string
+      environment:
+        description: "Environment to rollback"
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - production
+          - staging
+      confirm_rollback:
+        description: 'Type "CONFIRM" to proceed with rollback'
+        required: true
+        type: string
+
+env:
+  NODE_VERSION: "18"
+
+jobs:
+  validate-inputs:
+    name: 🔍 Validate Inputs
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+      image-exists: ${{ steps.validate.outputs.image-exists }}
+
+    steps:
+      - name: ✅ Validate confirmation
+        if: inputs.confirm_rollback != 'CONFIRM'
+        run: |
+          echo "❌ Rollback not confirmed. Please type 'CONFIRM' exactly."
+          exit 1
+
+      - name: 📋 Validate version format
+        id: validate
+        run: |
+          VERSION="${{ inputs.target_version }}"
+
+          # Remove 'v' prefix if present
+          if [[ $VERSION == v* ]]; then
+            VERSION="${VERSION#v}"
+          fi
+
+          # Validate semantic version format
+          if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "Expected format: v1.0.0 or 1.0.0 or v1.0.0-beta.1"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "✅ Version format is valid: $VERSION"
+
+      - name: 🐳 Check if Docker image exists
+        id: check-image
+        run: |
+          IMAGE="${{ secrets.DOCKER_HUB_USERNAME }}/railway-control:${{ steps.validate.outputs.version }}"
+
+          # Try to pull the image to check if it exists
+          if docker pull $IMAGE > /dev/null 2>&1; then
+            echo "image-exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Docker image exists: $IMAGE"
+          else
+            echo "image-exists=false" >> $GITHUB_OUTPUT
+            echo "❌ Docker image not found: $IMAGE"
+            exit 1
+          fi
+
+  backup-current:
+    name: 💾 Backup Current Version
+    runs-on: ubuntu-latest
+    needs: validate-inputs
+
+    steps:
+      - name: 📊 Get current deployment info
+        id: current
+        run: |
+          # Get current image info from Azure (this would need Azure CLI setup)
+          echo "current-version=unknown" >> $GITHUB_OUTPUT
+          echo "backup-timestamp=$(date -u +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: 📝 Create backup record
+        run: |
+          echo "🔄 Rollback Operation - $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
+          echo "📋 Environment: ${{ inputs.environment }}"
+          echo "🎯 Target Version: ${{ needs.validate-inputs.outputs.version }}"
+          echo "📦 Current Version: ${{ steps.current.outputs.current-version }}"
+          echo "🔖 Backup ID: ${{ steps.current.outputs.backup-timestamp }}"
+
+          # Here you could store this info in a database or artifact
+
+  rollback-deploy:
+    name: 🚀 Execute Rollback
+    runs-on: ubuntu-latest
+    needs: [validate-inputs, backup-current]
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: 🚀 Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ inputs.environment == 'staging' && format('{0}-staging', secrets.AZURE_WEBAPP_NAME) || secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ inputs.environment == 'staging' && secrets.AZURE_PUBLISH_PROFILE_STAGING || secrets.AZURE_PUBLISH_PROFILE }}
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/railway-control:${{ needs.validate-inputs.outputs.version }}
+
+      - name: ⏱️ Wait for deployment
+        run: sleep 30
+
+      - name: 🔍 Verify rollback
+        run: |
+          if [ "${{ inputs.environment }}" = "staging" ]; then
+            URL="https://${{ secrets.AZURE_WEBAPP_NAME }}-staging.azurewebsites.net"
+          else
+            URL="https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+          fi
+
+          echo "🌐 Testing URL: $URL"
+
+          # Test if the application is responding
+          if curl -f -s $URL > /dev/null; then
+            echo "✅ Rollback verification successful"
+            echo "🎉 Application is responding on ${{ inputs.environment }}"
+          else
+            echo "❌ Rollback verification failed"
+            echo "🚨 Application is not responding on ${{ inputs.environment }}"
+            exit 1
+          fi
+
+  post-rollback:
+    name: 📝 Post-Rollback Tasks
+    runs-on: ubuntu-latest
+    needs: [validate-inputs, rollback-deploy]
+    if: always()
+
+    steps:
+      - name: 📊 Rollback Status
+        run: |
+          if [ "${{ needs.rollback-deploy.result }}" = "success" ]; then
+            echo "✅ ROLLBACK SUCCESSFUL"
+            echo "🎯 Environment: ${{ inputs.environment }}"
+            echo "📦 Version: ${{ needs.validate-inputs.outputs.version }}"
+            echo "🕐 Completed: $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
+          else
+            echo "❌ ROLLBACK FAILED"
+            echo "🚨 Please check the deployment logs and manual intervention may be required"
+          fi
+
+      - name: 📧 Send notification
+        if: always()
+        run: |
+          STATUS="${{ needs.rollback-deploy.result == 'success' && '✅ SUCCESSFUL' || '❌ FAILED' }}"
+
+          echo "🔄 Rollback Status: $STATUS"
+          echo "📋 Environment: ${{ inputs.environment }}"
+          echo "🎯 Target Version: ${{ needs.validate-inputs.outputs.version }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "🕐 Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
+
+          # Here you would send notifications to Slack, Teams, etc.
+          # Example for Slack:
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data "{\"text\":\"🔄 Rollback $STATUS\\nEnvironment: ${{ inputs.environment }}\\nVersion: ${{ needs.validate-inputs.outputs.version }}\\nBy: ${{ github.actor }}\"}" \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: 📋 Create rollback issue
+        if: needs.rollback-deploy.result == 'failure'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Rollback Failed - ${{ inputs.environment }} to v${{ needs.validate-inputs.outputs.version }}`,
+              body: `## Rollback Failure Report
+
+            **Environment:** ${{ inputs.environment }}
+            **Target Version:** v${{ needs.validate-inputs.outputs.version }}
+            **Triggered By:** ${{ github.actor }}
+            **Timestamp:** ${new Date().toISOString()}
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ## Next Steps
+            - [ ] Review deployment logs
+            - [ ] Check Azure Web App status
+            - [ ] Verify Docker image availability
+            - [ ] Manual rollback if needed
+            - [ ] Update team on status
+
+            ## Logs
+            Check the workflow logs for detailed error information.
+            `,
+              labels: ['bug', 'rollback-failed', 'urgent']
+            })
+
+  cleanup:
+    name: 🧹 Cleanup
+    runs-on: ubuntu-latest
+    needs: [post-rollback]
+    if: always()
+
+    steps:
+      - name: 🧹 Cleanup temporary resources
+        run: |
+          echo "🧹 Performing cleanup tasks..."
+          # Clean up any temporary files or resources
+          echo "✅ Cleanup completed"

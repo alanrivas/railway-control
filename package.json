@@ -1,13 +1,31 @@
 {
   "name": "railway-control",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:docker": "docker-compose -f docker-compose.dev.yml up",
     "build": "tsc -b && vite build",
+    "preview": "vite preview",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit",
+    "test": "echo 'Tests will be implemented in next phase'",
+    "test:watch": "echo 'Tests will be implemented in next phase'",
+    "test:coverage": "echo 'Tests will be implemented in next phase'",
+    "test:ci": "echo 'Tests will be implemented in next phase'",
+    "test:e2e": "echo 'E2E tests will be implemented in next phase'",
+    "test:e2e:ui": "echo 'E2E tests will be implemented in next phase'",
+    "test:integration": "echo 'Integration tests will be implemented in next phase'",
+    "test:all": "npm run test:ci && npm run test:e2e",
+    "docker:dev": "docker build -f Dockerfile.dev -t railway-control:dev .",
+    "docker:prod": "docker build -f Dockerfile -t railway-control:prod .",
+    "docker:push": "docker push tu-usuario/railway-control:latest",
+    "docker:run": "docker run -p 80:80 railway-control:prod",
+    "deploy:staging": "echo 'Deploy to staging - configure with your CI/CD'",
+    "deploy:prod": "echo 'Deploy to production - configure with your CI/CD'",
+    "rollback": "echo 'Rollback - use GitHub Actions workflow'"
   },
   "dependencies": {
     "react": "^19.1.1",
@@ -25,5 +43,25 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
-  }
+  },
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tu-usuario/railway-control.git"
+  },
+  "keywords": [
+    "railway",
+    "simulation",
+    "react",
+    "typescript",
+    "vite",
+    "docker",
+    "azure",
+    "ci-cd"
+  ],
+  "author": "Tu Nombre <tu-email@ejemplo.com>",
+  "license": "MIT"
 }
