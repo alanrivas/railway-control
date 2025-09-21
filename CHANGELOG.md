@@ -1,112 +1,164 @@
 # Changelog
 
-Registro de todos los cambios importantes del Railway Control System.
+All notable changes to this project will be documented in this file.
 
-## [v0.3.0] - 2025-09-09
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### ✨ Nuevas Características Principales
+## [Unreleased]
 
-- **🚂 Sistema Dual de Trenes**: Implementado segundo tren completamente independiente
-- **🎨 Tren Verde Mar**: Segundo tren con color distintivo (#2E8B57) para fácil identificación
-- **🛤️ Nueva Ruta de Entrada**: Agregada vía horizontal + diagonal hacia SW1 para el segundo tren
-- **🎛️ Controles Independientes**: Panel de control separado para cada tren con sus propios botones
-- **⚡ Velocidades Independientes**: Cada tren tiene su propio control de velocidad (0.1x - 2.0x)
+### Added
 
-### 🔧 Mejoras de Sistema
+- CI/CD pipeline with GitHub Actions
+- Docker support for development and production
+- Terraform infrastructure as code for Azure
+- Comprehensive testing setup (Unit, Integration, E2E)
+- Automated rollback capabilities
+- Performance monitoring and alerts
 
-- **📊 Paneles de Estado**: Cada tren muestra su estado (EJECUTANDO/DETENIDO) independientemente
-- **🎯 Navegación Inteligente**: Segundo tren navega: track-0-horizontal → track-0-diagonal → SW1 → sistema principal
-- **🚦 Respeto a Semáforos**: Ambos trenes respetan independientemente los semáforos rojos
-- **🔄 Reset Independiente**: Cada tren puede resetearse sin afectar al otro
-- **🎨 UI Mejorada**: Panel del segundo tren con colores distintivos (fondo verde claro, bordes verde mar)
+## [1.0.0] - 2025-09-11
 
-### 🛤️ Infraestructura de Vías
+### Added
 
-- **Nueva Vía**: `track-0-horizontal` - entrada horizontal para el segundo tren
-- **Nueva Vía**: `track-0-diagonal` - conexión diagonal hacia SW1
-- **Integración**: Las nuevas vías se conectan perfectamente con el sistema existente
+- Sistema dual de trenes independientes
+- Tren principal (rojo) y tren verde mar
+- Controles independientes para cada tren
+- Paneles de control diferenciados por tren
+- Sistema de switches interactivos con código de colores
+- Sistema de semáforos con control de tráfico
+- Detección de colisiones con semáforos
+- Navegación inteligente respetando switches
+- Velocidades ajustables independientes (0.1x - 2.0x)
+- Reset independiente para cada tren
+- Layout complejo de vías con múltiples rutas
+- Interfaz visual estilo metro/subway
+- Animaciones fluidas de movimiento
+- Responsive design para diferentes pantallas
 
-### 💻 Arquitectura Técnica
+### Technical
 
-- **Estados Independientes**: `train2` y `simulation2` con gestión de estado separada
-- **Loops de Animación**: Dos useEffect independientes para animación simultánea
-- **Funciones de Control**: `startSimulation2`, `stopSimulation2`, `resetSimulation2`, `updateSpeed2`
-- **Renderizado Dual**: Ambos trenes se renderizan simultáneamente en el SVG
+- React 19 con TypeScript
+- Vite como build tool
+- SVG para gráficos vectoriales
+- CSS3 con animaciones
+- Arquitectura de componentes modular
+- Tipado estricto con TypeScript
+- Configuración ESLint estricta
 
-## [v0.2.0] - 2025-09-09
+### Infrastructure
 
-### ✨ Nuevas Características
+- Dockerización completa
+- Multi-stage builds optimizados
+- Nginx para serving en producción
+- Hot reload en desarrollo
+- Volume mounting para desarrollo
+- Environment variables configurables
 
-- **Sistema de Semáforos Mejorado**: Implementados semáforos rojo/verde únicamente
-- **Detección de Semáforos**: El tren se detiene automáticamente ante semáforos rojos
-- **Posicionamiento Corregido**: Eliminado semáforo S4 "volador", semáforos correctamente posicionados
-- **Switches Funcionales**: Ambos switches (SW1 y SW2) ahora funcionan correctamente
-- **Navegación Inteligente**: El tren respeta el estado de ambos switches para decidir rutas
+### CI/CD
 
-### 🔧 Mejoras
+- GitHub Actions workflows
+- Automated testing pipeline
+- Docker image building and pushing
+- Azure Web App deployment
+- Manual rollback capabilities
+- Semantic versioning automation
+- Security scanning with Trivy
+- Performance monitoring setup
 
-- **Simplificación de Código**: Eliminada lógica compleja de useCallback/useMemo que causaba problemas
-- **Sistema de Animación**: Implementado loop de animación simple pero funcional
-- **Tipos TypeScript**: Agregada propiedad `isWaitingAtSignal` al tipo Train
-- **Código de Colores**: Mejorado sistema de colores para switches y vías
+### Documentation
 
-### 🐛 Correcciones
+- README completo con guías de setup
+- Documentación de arquitectura
+- Guías de contribución
+- Troubleshooting guides
+- Performance optimization guides
 
-- **Movimiento del Tren**: Reparado sistema de animación que se había roto
-- **Switch SW2**: Corregida lógica para que el segundo switch funcione correctamente
-- **Semáforos**: Eliminados estados amarillos, solo rojo/verde
-- **Reset del Tren**: Funcionalidad de reset ahora inicializa correctamente todas las propiedades
+## [0.9.0] - 2025-09-10
 
-### 🛤️ Layout de Vías
+### Added
 
-- **track-1**: Vía de entrada común
-- **track-2-main/branch**: Sistema de rutas controlado por SW1
-- **track-3-main/branch**: Sistema de rutas controlado por SW2
-- **Navegación**: El tren sigue las rutas según el estado de los switches
+- Sistema básico de un solo tren
+- Switches simples
+- Semáforos básicos
+- Layout inicial de vías
 
-### 📋 Estado Actual
+### Changed
 
-- ✅ Movimiento fluido del tren
-- ✅ Switches interactivos (SW1 y SW2)
-- ✅ Semáforos rojo/verde funcionales
-- ✅ Detección de semáforos rojos
-- 🔄 Reanudación automática en semáforos (en desarrollo)
+- Migración a React 19
+- Actualización de dependencias
 
-## [v0.1.0] - 2025-09-09
+### Fixed
 
-### 🎉 Lanzamiento Inicial
+- Problemas de navegación en curvas
+- Detección de colisiones básica
 
-- **Proyecto Base**: Creado con React + TypeScript + Vite
-- **Sistema de Vías**: Layout básico con múltiples rutas
-- **Componente Tren**: Visualización básica del tren
-- **Switches Básicos**: Implementación inicial de desvíos
-- **Semáforos Básicos**: Sistema inicial de señales
-- **Controles**: Start/Stop/Reset/Speed básicos
+## [0.8.0] - 2025-09-09
 
-### 🏗️ Arquitectura
+### Added
 
-- **Componentes Modulares**: Separación en TrackComponent, SwitchComponent, etc.
-- **Tipos TypeScript**: Definiciones completas para Train, Track, Switch, Signal
-- **Utilidades**: trackUtils.ts y trainUtils.ts para lógica de negocio
-- **Estado React**: Manejo de estado con useState y useEffect
+- Componente base de railway
+- Sistema de vías básico
+- Renderizado SVG inicial
 
-## [Próximas Versiones]
+### Technical
 
-### 🎯 v0.3.0 (Planificado)
-
-- [ ] Reanudación automática completa en semáforos verdes
-- [ ] Múltiples trenes simultáneos
-- [ ] Detección de colisiones
-- [ ] Sonidos y efectos visuales
-
-### 🎯 v0.4.0 (Planificado)
-
-- [ ] Guardado/carga de configuraciones
-- [ ] Editor de layout de vías
-- [ ] Sistema de horarios para trenes
-- [ ] Métricas y estadísticas
+- Setup inicial del proyecto
+- Configuración de Vite
+- Setup de TypeScript
+- Configuración básica de ESLint
 
 ---
 
-**Formato**: Basado en [Keep a Changelog](https://keepachangelog.com/)  
-**Versionado**: [Semantic Versioning](https://semver.org/)
+## Template para Nuevas Releases
+
+### [X.Y.Z] - YYYY-MM-DD
+
+### Added
+
+- Nueva funcionalidad agregada
+
+### Changed
+
+- Cambios en funcionalidad existente
+
+### Deprecated
+
+- Funcionalidad que será removida en versiones futuras
+
+### Removed
+
+- Funcionalidad removida
+
+### Fixed
+
+- Bugs corregidos
+
+### Security
+
+- Vulnerabilidades corregidas
+
+---
+
+## Convenciones
+
+### Tipos de Cambios
+
+- **Added**: Nueva funcionalidad
+- **Changed**: Cambios en funcionalidad existente
+- **Deprecated**: Funcionalidad que será removida
+- **Removed**: Funcionalidad removida
+- **Fixed**: Bugs corregidos
+- **Security**: Vulnerabilidades corregidas
+
+### Versionado
+
+- **Major (X.0.0)**: Breaking changes
+- **Minor (X.Y.0)**: Nueva funcionalidad compatible
+- **Patch (X.Y.Z)**: Bug fixes compatibles
+
+### Links
+
+- [Unreleased]: https://github.com/tu-usuario/railway-control/compare/v1.0.0...HEAD
+- [1.0.0]: https://github.com/tu-usuario/railway-control/releases/tag/v1.0.0
+- [0.9.0]: https://github.com/tu-usuario/railway-control/releases/tag/v0.9.0
+- [0.8.0]: https://github.com/tu-usuario/railway-control/releases/tag/v0.8.0

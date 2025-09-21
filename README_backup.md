@@ -1,591 +1,293 @@
-# 🚂 Railway Control System
+# Railway Control System 🚂# Railway Control System 🚂
 
-Un sistema de simulación ferroviaria interactivo construido con React, TypeScript y Vite. Permite controlar múltiples trenes, switches y semáforos en tiempo real con completa independencia entre sistemas.
+Un sistema de simulación ferroviaria interactivo construido con React, TypeScript y Vite. Permite controlar múltiples trenes, switches y semáforos en tiempo real con completa independencia entre sistemas.Un sistema de simulación ferroviaria interactivo construido con React, TypeScript y Vite. Permite controlar múltiples trenes, switches y semáforos en tiempo real con completa independencia entre sistemas.
 
-[![Azure Static Web Apps](https://img.shields.io/badge/Azure-Static%20Web%20Apps-blue)](https://gray-pebble-051720810.1.azurestaticapps.net/)
-[![Deployment Status](https://github.com/alanrivas/railway-control/workflows/Azure%20Static%20Web%20Apps%20CI%2FCD/badge.svg)](https://github.com/alanrivas/railway-control/actions)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+## 🚀 Deployment & CI/CD## 🚀 Deployment & CI/CD
 
-## 🚀 Demo en Vivo
+Este proyecto incluye un pipeline completo de CI/CD con:Este proyecto incluye un pipeline completo de CI/CD con:
 
-**🌐 Aplicación desplegada**: [https://gray-pebble-051720810.1.azurestaticapps.net/](https://gray-pebble-051720810.1.azurestaticapps.net/)
+- 🐳 **Dockerización**: Contenedores optimizados para desarrollo y producción- 🐳 **Dockerización**: Contenedores optimizados para desarrollo y producción
 
-## 📚 Documentación de Deployment
+- 🔄 **GitHub Actions**: Pipeline automatizado para build, test y deploy- 🔄 **GitHub Actions**: Pipeline automatizado para build, test y deploy
 
-- **🔧 [Guía Completa de Azure Static Web Apps](AZURE-DEPLOYMENT-GUIDE.md)** - Configuración paso a paso
-- **🐛 [Errores Comunes y Soluciones](AZURE-TROUBLESHOOTING.md)** - Troubleshooting detallado
-- **📖 [Guía de Usuario](USER_GUIDE.md)** - Cómo usar la aplicación
+- 📦 **Docker Hub**: Registry público para imágenes versionadas- 📦 **Docker Hub**: Registry público para imágenes versionadas
 
-## 🚀 Deployment & CI/CD
+- ☁️ **Azure Web App**: Hosting cloud con deployment automático- ☁️ **Azure Web App**: Hosting cloud con deployment automático
 
-Este proyecto está configurado con deployment automático en Azure Static Web Apps:
+- 🏗️ **Terraform**: Infrastructure as Code para Azure- 🏗️ **Terraform**: Infrastructure as Code para Azure
 
-- ✅ **Deployment automático** en cada push a `master`
-- ✅ **Build con Vite** y Node.js 20+
-- ✅ **URL en vivo** actualizada automáticamente
-- ✅ **Configuración de Azure** completamente documentada
+- 🧪 **Testing Automático**: Unit, Integration y E2E tests- 🧪 **Testing Automático**: Unit, Integration y E2E tests
 
-## 🌟 Características Principales- 🐳 **Dockerización**: Contenedores optimizados para desarrollo y producción- 🐳 **Dockerización**: Contenedores optimizados para desarrollo y producción
+- 📋 **Semantic Versioning**: Versionado estándar con tags Git- 📋 **Semantic Versioning**: Versionado estándar con tags Git
 
-### 🚂 Sistema Dual de Trenes- 🔄 **GitHub Actions**: Pipeline automatizado para build, test y deploy- 🔄 **GitHub Actions**: Pipeline automatizado para build, test y deploy
+## 🌟 Características Principales## 🌟 Características Principales
 
-- **Dos trenes independientes** con control completo y simultáneo
-
-- **Tren Principal (Azul)** comenzando en la vía principal del sistema- 📦 **Docker Hub**: Registry público para imágenes versionadas- 📦 **Docker Hub**: Registry público para imágenes versionadas
-
-- **Tren Verde Mar** iniciando desde vía horizontal hacia SW1
-
-- **Controles independientes** con paneles de control separados- ☁️ **Azure Web App**: Hosting cloud con deployment automático- ☁️ **Azure Web App**: Hosting cloud con deployment automático
-
-- **Velocidades ajustables** (0.1x - 2.0x) para cada tren por separado
-
-- **Reset independiente** a puntos de partida específicos- 🏗️ **Terraform**: Infrastructure as Code para Azure- 🏗️ **Terraform**: Infrastructure as Code para Azure
-
-### 🔀 Sistema de Switches (Desvíos)- 🧪 **Testing Automático**: Unit, Integration y E2E tests- 🧪 **Testing Automático**: Unit, Integration y E2E tests
-
-- **Switches interactivos** con cambio de ruta mediante clic
-
-- **Código de colores visual**:- 📋 **Semantic Versioning**: Versionado estándar con tags Git- 📋 **Semantic Versioning**: Versionado estándar con tags Git
-
-  - 🟢 Verde: Ruta principal (main)
-
-  - 🔴 Rojo: Ruta de desvío (branch)## 🌟 Características Principales## 🌟 Características Principales
-
-  - 🔵 Azul: Ruta principal en SW2
-
-  - 🟠 Naranja: Ruta de desvío en SW2### 🚂 Sistema Dual de Trenes### 🚂 Sistema Dual de Trenes
-
-- **Navegación inteligente** que respeta automáticamente el estado de switches
+### 🚂 Sistema Dual de Trenes### 🚂 Sistema Dual de Trenes
 
 - **Dos trenes independientes**: Control completo de dos trenes simultáneamente- **Dos trenes independientes**: Control completo de dos trenes simultáneamente
 
-### 🚦 Sistema de Semáforos
+- **Tren Principal (Rojo)**: Comienza en la vía principal del sistema- **Tren Principal (Azul)**: Comienza en la vía principal del sistema
 
-- **Control de tráfico** con estados rojo/verde- **Tren Principal (Rojo)**: Comienza en la vía principal del sistema- **Tren Principal (Azul)**: Comienza en la vía principal del sistema
-
-- **Detección dual** para ambos trenes independientemente
-
-- **Reanudación automática** cuando cambian a verde- **Tren Verde Mar**: Nuevo tren que inicia desde vía horizontal hacia SW1- **Tren Verde Mar**: Nuevo tren que inicia desde vía horizontal hacia SW1
-
-- **Posicionamiento estratégico** en puntos clave de las vías
+- **Tren Verde Mar**: Nuevo tren que inicia desde vía horizontal hacia SW1- **Tren Verde Mar**: Nuevo tren que inicia desde vía horizontal hacia SW1
 
 - **Movimiento fluido**: Animación suave de ambos trenes a través de las vías- **Movimiento fluido**: Animación suave de ambos trenes a través de las vías
 
-### 🎛️ Paneles de Control
+- **Visualización realista**: Trenes con ventanas, ruedas y colores distintivos- **Visualización realista**: Trenes con ventanas, ruedas y colores distintivos
 
-- **Panel Tren Principal**: Controles tradicionales con fondo gris claro- **Visualización realista**: Trenes con ventanas, ruedas y colores distintivos- **Visualización realista**: Trenes con ventanas, ruedas y colores distintivos
-
-- **Panel Tren Verde Mar**: Controles con temática verde mar distintiva
-
-- **Estados independientes**: Muestra EJECUTANDO/DETENIDO por separado- **Controles independientes**: Cada tren tiene su propio panel de control- **Controles independientes**: Cada tren tiene su propio panel de control
-
-- **Controles específicos**: Start, Stop, Reset y velocidad para cada tren
+- **Controles independientes**: Cada tren tiene su propio panel de control- **Controles independientes**: Cada tren tiene su propio panel de control
 
 - **Velocidades independientes**: Control de velocidad separado (0.1x - 2.0x) para cada tren- **Velocidades independientes**: Control de velocidad separado (0.1x - 2.0x) para cada tren
 
-## 🚀 Inicio Rápido
-
 - **Reset independiente**: Reinicia cada tren a su punto de partida específico- **Reset independiente**: Reinicia cada tren a su punto de partida específico
-
-### 📋 Prerrequisitos
 
 ### 🎛️ Paneles de Control Duales### 🎛️ Paneles de Control Duales
 
-**Opción 1: Desarrollo Local**
+- **Panel Tren Principal**: Controles tradicionales con fondo gris claro- **Panel Tren Principal**: Controles tradicionales con fondo gris claro
 
-```bash- **Panel Tren Principal**: Controles tradicionales con fondo gris claro- **Panel Tren Principal**: Controles tradicionales con fondo gris claro
-
-node --version    # v18+ requerido
-
-npm --version     # v8+ requerido- **Panel Tren Verde Mar**: Controles con temática verde mar y bordes distintivos- **Panel Tren Verde Mar**: Controles con temática verde mar y bordes distintivos
-
-```
+- **Panel Tren Verde Mar**: Controles con temática verde mar y bordes distintivos- **Panel Tren Verde Mar**: Controles con temática verde mar y bordes distintivos
 
 - **Estados independientes**: Cada panel muestra EJECUTANDO/DETENIDO por separado- **Estados independientes**: Cada panel muestra EJECUTANDO/DETENIDO por separado
 
-**Opción 2: Docker** (Recomendado)
+- **Botones específicos**: Start, Stop, Reset y control de velocidad para cada tren- **Botones específicos**: Start, Stop, Reset y control de velocidad para cada tren
 
-````bash- **Botones específicos**: Start, Stop, Reset y control de velocidad para cada tren- **Botones específicos**: Start, Stop, Reset y control de velocidad para cada tren
+### 🔀 Sistema de Switches (Desvíos)### 🔀 Sistema de Switches (Desvíos)
 
-docker --version  # v20+ requerido
+- **Switches interactivos**: Haz clic para cambiar entre rutas principales y de desvío- **Switches interactivos**: Haz clic para cambiar entre rutas principales y de desvío
 
-```### 🔀 Sistema de Switches (Desvíos)### 🔀 Sistema de Switches (Desvíos)
+- **Código de colores**:- **Código de colores**:
 
+  - 🟢 **Verde**: Ruta principal (main) - 🟢 **Verde**: Ruta principal (main)
 
+  - 🔴 **Rojo**: Ruta de desvío (branch) - 🔴 **Rojo**: Ruta de desvío (branch)
 
-### 🏃‍♂️ Ejecutar Localmente- **Switches interactivos**: Haz clic para cambiar entre rutas principales y de desvío- **Switches interactivos**: Haz clic para cambiar entre rutas principales y de desvío
+  - 🔵 **Azul**: Ruta principal en SW2 - 🔵 **Azul**: Ruta principal en SW2
 
-
-
-1. **Clonar el repositorio**- **Código de colores**:- **Código de colores**:
-
-   ```bash
-
-   git clone https://github.com/tu-usuario/railway-control.git  - 🟢 **Verde**: Ruta principal (main) - 🟢 **Verde**: Ruta principal (main)
-
-   cd railway-control
-
-   ```  - 🔴 **Rojo**: Ruta de desvío (branch) - 🔴 **Rojo**: Ruta de desvío (branch)
-
-
-
-2. **Instalar dependencias**  - 🔵 **Azul**: Ruta principal en SW2 - 🔵 **Azul**: Ruta principal en SW2
-
-   ```bash
-
-   npm install  - 🟠 **Naranja**: Ruta de desvío en SW2 - 🟠 **Naranja**: Ruta de desvío en SW2
-
-````
+  - 🟠 **Naranja**: Ruta de desvío en SW2 - 🟠 **Naranja**: Ruta de desvío en SW2
 
 - **Navegación inteligente**: El tren respeta automáticamente el estado de los switches- **Navegación inteligente**: El tren respeta automáticamente el estado de los switches
 
-3. **Iniciar desarrollo**
+### 🚦 Sistema de Semáforos### 🚦 Sistema de Semáforos
 
-   ````bash### 🚦 Sistema de Semáforos### 🚦 Sistema de Semáforos
+- **Control de tráfico**: Semáforos con estados rojo/verde- **Control de tráfico**: Semáforos con estados rojo/verde
 
-   npm run dev
+- **Detección dual**: Ambos trenes se detienen independientemente ante semáforos rojos- **Detección dual**: Ambos trenes se detienen independientemente ante semáforos rojos
 
-   ```- **Control de tráfico**: Semáforos con estados rojo/verde- **Control de tráfico**: Semáforos con estados rojo/verde
-
-
-
-   ````
-
-4. **Abrir en el navegador**- **Detección dual**: Ambos trenes se detienen independientemente ante semáforos rojos- **Detección dual**: Ambos trenes se detienen independientemente ante semáforos rojos
-
-   ```
-
-   http://localhost:5173- **Reanudación automática**: Cuando un semáforo cambia a verde, ambos trenes pueden continuar- **Reanudación automática**: Cuando un semáforo cambia a verde, ambos trenes pueden continuar
-
-   ```
+- **Reanudación automática**: Cuando un semáforo cambia a verde, ambos trenes pueden continuar- **Reanudación automática**: Cuando un semáforo cambia a verde, ambos trenes pueden continuar
 
 - **Posicionamiento preciso**: Semáforos ubicados estratégicamente en las vías- **Posicionamiento preciso**: Semáforos ubicados estratégicamente en las vías
 
-### 🐳 Ejecutar con Docker
-
 - **Impacto global**: Los semáforos afectan a cualquier tren que se acerque a ellos- **Impacto global**: Los semáforos afectan a cualquier tren que se acerque a ellos
 
-**Desarrollo con Hot Reload:**
+## 🚀 Quick Start### 🎮 Controles de Simulación
 
-`````bash## 🚀 Quick Start### 🎮 Controles de Simulación
+### 📋 Prerrequisitos- **Start/Stop**: Inicia y detiene la simulación
 
-# Opción 1: Docker Compose (recomendado)
+- **Speed Control**: Ajusta la velocidad de 0.1x a 3.0x
 
-docker-compose -f docker-compose.dev.yml up### 📋 Prerrequisitos- **Start/Stop**: Inicia y detiene la simulación
-
-
-
-# Opción 2: Docker directo- **Speed Control**: Ajusta la velocidad de 0.1x a 3.0x
-
-docker build -f Dockerfile.dev -t railway-control:dev .
-
-docker run -p 5173:5173 railway-control:dev````bash- **Reset**: Reinicia el tren al punto de partida
-
-`````
+````bash- **Reset**: Reinicia el tren al punto de partida
 
 # Herramientas requeridas- **Interactividad**: Cambia switches y semáforos durante la simulación
 
-**Producción:**
+node --version          # v18+ requerido
 
-````bashnode --version          # v18+ requerido
+docker --version        # Para contenedores## 🏗️ Arquitectura del Proyecto
 
-# Opción 1: Docker Compose
+git --version          # Para versionado
 
-docker-compose updocker --version        # Para contenedores## 🏗️ Arquitectura del Proyecto
-
-
-
-# Opción 2: Docker directogit --version          # Para versionado
-
-docker build -f Dockerfile -t railway-control:prod .
-
-docker run -p 8080:80 railway-control:prodterraform --version    # Para infraestructura (opcional)```
-
-````
+terraform --version    # Para infraestructura (opcional)```
 
 src/
-
-### 🎮 Cómo Usar la Aplicación
 
 # Azure CLI (para despliegue)├── components/Railway/
 
-1. **Configurar el Layout**
+az --version           # Para Azure deployment│   ├── RailwaySystem.tsx      # Componente principal
 
-   - Haz clic en los switches para cambiar rutas (cambian de color)az --version # Para Azure deployment│ ├── RailwaySystem.tsx # Componente principal
+```│   ├── TrackComponent.tsx     # Renderizado de vías
 
-   - Configura los semáforos (rojo/verde) según necesites
+│   ├── SwitchComponent.tsx    # Componente de switches
 
-`````│ ├── TrackComponent.tsx     # Renderizado de vías
+### ⚡ Desarrollo Local (Rápido)│   ├── SignalComponent.tsx    # Componente de semáforos
 
-2. **Controlar los Trenes**
+│   └── TrainComponent.tsx     # Componente del tren
 
-   - Usa los paneles de control independientes│   ├── SwitchComponent.tsx    # Componente de switches
-
-   - Ajusta la velocidad de cada tren por separado
-
-   - Start/Stop independiente para cada tren### ⚡ Desarrollo Local (Rápido)│   ├── SignalComponent.tsx    # Componente de semáforos
-
-
-
-3. **Observar la Simulación**│   └── TrainComponent.tsx     # Componente del tren
-
-   - Los trenes respetan automáticamente switches y semáforos
-
-   - Cada tren tiene su propia ruta y comportamiento```bash├── types/
-
-   - Usa Reset para reiniciar cualquier tren a su posición inicial
+```bash├── types/
 
 # 1. Clonar y configurar│   └── railway.ts             # Definiciones de tipos TypeScript
 
-## 🛠️ Scripts Disponibles
-
 git clone https://github.com/tu-usuario/railway-control.git├── utils/
 
-```bash
+cd railway-control│   ├── trackUtils.ts          # Utilidades para vías y colores
 
-# Desarrollocd railway-control│   ├── trackUtils.ts          # Utilidades para vías y colores
-
-npm run dev              # Servidor de desarrollo con hot reload
-
-npm run build            # Build de producciónnpm install│   └── trainUtils.ts          # Lógica de navegación del tren
-
-npm run preview          # Preview del build de producción
+npm install│   └── trainUtils.ts          # Lógica de navegación del tren
 
 └── App.tsx                    # Aplicación principal
 
-# Docker
-
-npm run docker:dev       # Desarrollo con Docker# 2. Ejecutar en desarrollo```
-
-npm run docker:prod      # Producción con Docker
-
-npm run docker:build     # Build imagen de producciónnpm run dev
-
-npm run docker:test      # Test de imagen Docker
-
-# ➡️ http://localhost:5173## 🛤️ Layout de Vías
-
-# Utilidades
-
-npm run setup            # Setup automatizado del proyecto
-
-npm run clean            # Limpiar dependencias y builds
-
-```# 3. Con Docker (recomendado)El sistema incluye un layout complejo con múltiples rutas y dos puntos de entrada:
-
-
-
-## 🏗️ Arquitectura del Proyectodocker-compose -f docker-compose.dev.yml up
-
-
-
-```# ➡️ http://localhost:5173 (con hot reload)### Vías de Entrada
-
-src/
-
-├── components/````
-
-│   └── Railway/
-
-│       ├── RailwaySystem.tsx      # Componente principal- **track-1**: Vía de entrada principal (Tren 1 - Azul)
-
-│       ├── TrainComponent.tsx     # Lógica de trenes
-
-│       ├── TrackComponent.tsx     # Sistema de vías### 🐳 Producción Local- **track-0-horizontal**: Nueva vía de entrada horizontal (Tren 2 - Verde Mar)
-
-│       ├── SwitchComponent.tsx    # Switches interactivos
-
-│       └── SignalComponent.tsx    # Semáforos- **track-0-diagonal**: Conexión diagonal hacia SW1 (Tren 2 - Verde Mar)
-
-├── types/
-
-│   └── railway.ts                 # Tipos TypeScript````bash
-
-├── utils/
-
-│   ├── trackUtils.ts             # Utilidades de vías# Build y ejecutar producción### Vías Principales
-
-│   └── trainUtils.ts             # Utilidades de trenes
-
-├── hooks/                        # Custom React hooksdocker-compose up --build
-
-└── assets/                       # Recursos estáticos
-
-```# ➡️ http://localhost:80- **track-2-main**: Ruta principal después de SW1
-
-
-
-## 🐳 Deployment y CI/CD```- **track-3-main**: Continuación ruta principal después de SW2
-
-
-
-Este proyecto incluye un pipeline completo de CI/CD:
-
-
-
-### 🔄 Características DevOps## 📦 CI/CD Pipeline### Vías de Desvío
-
-- **🐳 Dockerización**: Contenedores optimizados para desarrollo y producción
-
-- **🔄 GitHub Actions**: Pipeline automatizado para build, test y deploy
-
-- **📦 Docker Hub**: Registry público para imágenes versionadas
-
-- **☁️ Azure Web App**: Hosting cloud con deployment automático### 🏗️ Arquitectura de Deployment- **track-2-branch-1/2/3**: Ruta superior (desvío de SW1)
-
-- **🏗️ Terraform**: Infrastructure as Code para Azure
-
-- **📋 Semantic Versioning**: Versionado estándar con tags Git- **track-3-branch-1/2**: Ruta inferior (desvío de SW2)
-
-- **🔒 Security Scanning**: Análisis de vulnerabilidades automatizado
-
-- **🔄 Rollback**: Capacidad de rollback automático```mermaid
-
-
-
-### 🚀 Deployment Pipelinegraph TD### Puntos de Decisión
-
-
-
-```mermaid    A[Git Push] --> B[GitHub Actions]
-
-graph TD
-
-    A[Git Push] --> B[GitHub Actions]    B --> C[Build & Test]- **SW1 (x:300)**: Decide entre ruta principal y desvío superior (afecta ambos trenes)
-
-    B --> C[Build & Test]
-
-    C --> D[Docker Build]    C --> D[Docker Build]- **SW2 (x:600)**: Decide entre continuación recta y desvío inferior
-
-    D --> E[Push to Docker Hub]
-
-    E --> F[Deploy to Azure]    D --> E[Push to Docker Hub]
-
-
-
-    G[Git Tag v1.0.0] --> H[Release Pipeline]    E --> F[Deploy to Azure]### Rutas de Trenes
-
-    H --> I[Build Production]
-
-    I --> J[Tag: latest + v1.0.0]
-
-    J --> K[Deploy Production]
-
-        G[Git Tag v1.0.0] --> H[Release Pipeline]- **Tren 1 (Azul)**: track-1 → SW1 → [rutas existentes]
-
-    L[Manual Rollback] --> M[Select Version]
-
-    M --> N[Deploy Specific Tag]    H --> I[Build Production]- **Tren 2 (Verde Mar)**: track-0-horizontal → track-0-diagonal → SW1 → [rutas existentes]
-
-`````
-
-    I --> J[Tag: latest + v1.0.0]
-
-### 📋 Setup para Deployment
-
-    J --> K[Deploy Production]## 🎯 Funcionalidades Implementadas
-
-1. **Configurar GitHub Secrets**
-
-   ```
-
-   DOCKER_HUB_USERNAME=tu-usuario-dockerhub
-
-   DOCKER_HUB_TOKEN=dckr_pat_xxxxx    L[Manual Rollback] --> M[Select Version]### ✅ Completadas
-
-   AZURE_WEBAPP_NAME=railway-control-app
-
-   AZURE_PUBLISH_PROFILE=<contenido-xml>    M --> N[Deploy Specific Tag]
-
-   ```
-
-````- [x] Sistema básico de vías y navegación
-
-2. **Configurar Azure con Terraform**
-
-   ```bash- [x] Switches interactivos con código de colores
-
-   cd terraform/
-
-   terraform init### 🏷️ Versionado Automático- [x] Semáforos rojo/verde con control de tráfico
-
-   terraform apply
-
-   ```- [x] Movimiento fluido de múltiples trenes
-
-
-
-3. **Primer Deployment**```bash- [x] **Sistema dual de trenes independientes** 🆕
-
-   ```bash
-
-   git tag v1.0.0# Crear release (dispara deployment automático)- [x] **Tren verde mar con entrada alternativa** 🆕
-
-   git push origin v1.0.0
-
-   ```git tag v1.0.0- [x] **Controles independientes para cada tren** 🆕
-
-
-
-Para más detalles, consulta [DEPLOYMENT_PLAN.md](DEPLOYMENT_PLAN.md)git push origin v1.0.0- [x] **Paneles de control diferenciados** 🆕
-
-
-
-## 🧪 Testing# ➡️ Crea imagen: railway-control:v1.0.0 + railway-control:latest- [x] Respeto de switches por parte de ambos trenes
-
-
-
-```bash- [x] Detección de semáforos rojos para ambos trenes
-
-# Tests unitarios (cuando se configuren)
-
-npm test# Pre-release- [x] Controles de simulación duales (start/stop/reset/speed)
-
-
-
-# Tests de integracióngit tag v1.1.0-beta.1- [x] **Nuevas vías: horizontal + diagonal hacia SW1** 🆕
-
-npm run test:integration
-
-git push origin v1.1.0-beta.1- [x] Interfaz visual estilo metro
-
-# Tests E2E
-
-npm run test:e2e# ➡️ Crea imagen: railway-control:v1.1.0-beta.1
-
-
-
-# Test de Docker### 🔄 En Desarrollo
-
-npm run docker:test
-
-```# Hotfix
-
-
-
-## 📊 Performancegit tag v1.0.1- [ ] Reanudación automática cuando semáforo cambia a verde
-
-
-
-- **Bundle Size**: ~201KB (gzipped: ~62KB)git push origin v1.0.1- [x] **Múltiples trenes simultáneos** ✅ Implementado en v0.3.0
-
-- **Lighthouse Score**: 95+ (Performance)
-
-- **First Contentful Paint**: <1.5s# ➡️ Actualiza railway-control:latest- [ ] Sonidos y efectos
-
-- **Time to Interactive**: <2s
-
-- **Docker Image**: ~50MB (multi-stage build)```- [ ] Guardado/carga de configuraciones
-
-
-
-## 🤝 Contribución- [ ] Tercer y cuarto tren
-
-
-
-1. Fork el proyecto## 🛠️ Setup Completo (Paso a Paso)- [ ] Colisiones entre trenes
-
-2. Crea tu feature branch (`git checkout -b feature/AmazingFeature`)
-
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-
-4. Push a la branch (`git push origin feature/AmazingFeature`)
-
-5. Abre un Pull Request### 1️⃣ **Configuración Inicial**## 🚀 Instalación y Uso
-
-
-
-### 🔧 Desarrollo Local
-
-
-
-```bash```bash### Prerrequisitos
-
-# Setup inicial
-
-npm run setup# Clonar repositorio
-
-
-
-# Ejecutar en desarrollogit clone https://github.com/tu-usuario/railway-control.git- Node.js (v16 o superior)
+# 2. Ejecutar en desarrollo```
 
 npm run dev
 
+# ➡️ http://localhost:5173## 🛤️ Layout de Vías
+
+
+
+# 3. Con Docker (recomendado)El sistema incluye un layout complejo con múltiples rutas y dos puntos de entrada:
+
+docker-compose -f docker-compose.dev.yml up
+
+# ➡️ http://localhost:5173 (con hot reload)### Vías de Entrada
+
+````
+
+- **track-1**: Vía de entrada principal (Tren 1 - Azul)
+
+### 🐳 Producción Local- **track-0-horizontal**: Nueva vía de entrada horizontal (Tren 2 - Verde Mar)
+
+- **track-0-diagonal**: Conexión diagonal hacia SW1 (Tren 2 - Verde Mar)
+
+````bash
+
+# Build y ejecutar producción### Vías Principales
+
+docker-compose up --build
+
+# ➡️ http://localhost:80- **track-2-main**: Ruta principal después de SW1
+
+```- **track-3-main**: Continuación ruta principal después de SW2
+
+
+
+## 📦 CI/CD Pipeline### Vías de Desvío
+
+
+
+### 🏗️ Arquitectura de Deployment- **track-2-branch-1/2/3**: Ruta superior (desvío de SW1)
+
+- **track-3-branch-1/2**: Ruta inferior (desvío de SW2)
+
+```mermaid
+
+graph TD### Puntos de Decisión
+
+    A[Git Push] --> B[GitHub Actions]
+
+    B --> C[Build & Test]- **SW1 (x:300)**: Decide entre ruta principal y desvío superior (afecta ambos trenes)
+
+    C --> D[Docker Build]- **SW2 (x:600)**: Decide entre continuación recta y desvío inferior
+
+    D --> E[Push to Docker Hub]
+
+    E --> F[Deploy to Azure]### Rutas de Trenes
+
+
+
+    G[Git Tag v1.0.0] --> H[Release Pipeline]- **Tren 1 (Azul)**: track-1 → SW1 → [rutas existentes]
+
+    H --> I[Build Production]- **Tren 2 (Verde Mar)**: track-0-horizontal → track-0-diagonal → SW1 → [rutas existentes]
+
+    I --> J[Tag: latest + v1.0.0]
+
+    J --> K[Deploy Production]## 🎯 Funcionalidades Implementadas
+
+
+
+    L[Manual Rollback] --> M[Select Version]### ✅ Completadas
+
+    M --> N[Deploy Specific Tag]
+
+```- [x] Sistema básico de vías y navegación
+
+- [x] Switches interactivos con código de colores
+
+### 🏷️ Versionado Automático- [x] Semáforos rojo/verde con control de tráfico
+
+- [x] Movimiento fluido de múltiples trenes
+
+```bash- [x] **Sistema dual de trenes independientes** 🆕
+
+# Crear release (dispara deployment automático)- [x] **Tren verde mar con entrada alternativa** 🆕
+
+git tag v1.0.0- [x] **Controles independientes para cada tren** 🆕
+
+git push origin v1.0.0- [x] **Paneles de control diferenciados** 🆕
+
+# ➡️ Crea imagen: railway-control:v1.0.0 + railway-control:latest- [x] Respeto de switches por parte de ambos trenes
+
+- [x] Detección de semáforos rojos para ambos trenes
+
+# Pre-release- [x] Controles de simulación duales (start/stop/reset/speed)
+
+git tag v1.1.0-beta.1- [x] **Nuevas vías: horizontal + diagonal hacia SW1** 🆕
+
+git push origin v1.1.0-beta.1- [x] Interfaz visual estilo metro
+
+# ➡️ Crea imagen: railway-control:v1.1.0-beta.1
+
+### 🔄 En Desarrollo
+
+# Hotfix
+
+git tag v1.0.1- [ ] Reanudación automática cuando semáforo cambia a verde
+
+git push origin v1.0.1- [x] **Múltiples trenes simultáneos** ✅ Implementado en v0.3.0
+
+# ➡️ Actualiza railway-control:latest- [ ] Sonidos y efectos
+
+```- [ ] Guardado/carga de configuraciones
+
+- [ ] Tercer y cuarto tren
+
+## 🛠️ Setup Completo (Paso a Paso)- [ ] Colisiones entre trenes
+
+
+
+### 1️⃣ **Configuración Inicial**## 🚀 Instalación y Uso
+
+
+
+```bash### Prerrequisitos
+
+# Clonar repositorio
+
+git clone https://github.com/tu-usuario/railway-control.git- Node.js (v16 o superior)
+
 cd railway-control- npm o yarn
 
-# Tests antes de commit
+
+
+# Instalar dependencias### Instalación
+
+npm install
+
+```bash
+
+# Verificar que todo funciona# Clonar el repositorio
+
+npm run devgit clone [URL_DEL_REPO]
+
+npm run testcd railway-control
 
 npm run build
 
-npm run test
+```# Instalar dependencias
 
-```# Instalar dependencias### Instalación
+npm install
 
+### 2️⃣ **Docker Setup**
 
+# Ejecutar en modo desarrollo
 
-## 📁 Documentación Adicionalnpm install
+```bashnpm run dev
 
+# Test Docker local```
 
+docker build -f Dockerfile.dev -t railway-control:dev .
 
-- [📋 Setup Completo](SETUP_COMPLETED.md) - Guía de configuración completa```bash
-
-- [🚀 Plan de Deployment](DEPLOYMENT_PLAN.md) - Estrategia de deployment
-
-- [🔧 Resolución de Errores](ERROR_RESOLUTION.md) - Troubleshooting guide# Verificar que todo funciona# Clonar el repositorio
-
-- [📝 Changelog](CHANGELOG.md) - Historial de cambios
-
-- [📊 Estado Final](FINAL_STATUS.md) - Estado del proyectonpm run devgit clone [URL_DEL_REPO]
+docker run -p 5173:5173 railway-control:dev### Uso
 
 
-
-## 📄 Licencianpm run testcd railway-control
-
-
-
-Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE) para más detalles.npm run build
-
-
-
-## 🙏 Agradecimientos```# Instalar dependencias
-
-
-
-- React Team por el excelente frameworknpm install
-
-- Vite por la herramienta de build ultra-rápida
-
-- Docker por la containerización### 2️⃣ **Docker Setup**
-
-- GitHub Actions por el CI/CD gratuito
-
-- Azure por el hosting cloud# Ejecutar en modo desarrollo
-
-
-
----```bashnpm run dev
-
-
-
-<div align="center"># Test Docker local```
-
-
-
-**🚂 ¡Disfruta controlando tu sistema ferroviario! 🚂**docker build -f Dockerfile.dev -t railway-control:dev .
-
-
-
-[Demo Live](https://railway-control-app.azurewebsites.net) • docker run -p 5173:5173 railway-control:dev### Uso
-
-[Documentación](https://github.com/tu-usuario/railway-control/wiki) •
-
-[Issues](https://github.com/tu-usuario/railway-control/issues) •
-
-[Discussions](https://github.com/tu-usuario/railway-control/discussions)
 
 # Test producción1. Abre http://localhost:5173 en tu navegador
 
-</div>
 docker build -f Dockerfile -t railway-control:prod .2. Configura switches haciendo clic en ellos (cambian de color)
 
 docker run -p 80:80 railway-control:prod3. Ajusta semáforos (rojo/verde) según sea necesario
