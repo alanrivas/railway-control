@@ -44,8 +44,9 @@ jobs:
           action: "upload"
           # ⚠️ CONFIGURACIÓN CLAVE: Especificar ubicación de archivos
           app_location: "/" # Ubicación del código fuente
-          output_location: "dist" # 📁 Directorio donde Vite genera los archivos (dist/)
+          app_artifact_location: "dist" # 📁 Usar app_artifact_location en lugar de output_location
           api_location: "" # No hay API
+          skip_app_build: true # Saltar build automático, ya lo hicimos manualmente
 
       - name: ⚠️ Azure token not configured
         if: ${{ !secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
